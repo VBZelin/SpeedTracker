@@ -21,28 +21,21 @@
 // automatically indent the entirety of the .qml file.
 
 
-import QtQuick 2.13
-import QtQuick.Controls 2.13
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 import ArcGIS.AppFramework 1.0
-//import Esri.ArcGISRuntime 100.6
+
+import "pages"
 
 App {
     id: app
+
     width: 400
     height: 640
 
+    LandingPage {
 
-    Text {
-        anchors.fill: parent
-
-        text: "{My App}"
-        font.pointSize: 24
-        color: "black"
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
     }
 }
 
