@@ -26,6 +26,7 @@ import QtQuick.Controls 2.15
 
 import ArcGIS.AppFramework 1.0
 
+import "assets"
 import "pages"
 
 App {
@@ -34,8 +35,14 @@ App {
     width: 400
     height: 640
 
-    LandingPage {
+    property alias colors: colors
 
+    Colors {
+        id: colors
+    }
+
+    MainUI {
+        id: mainUI
     }
 }
 
