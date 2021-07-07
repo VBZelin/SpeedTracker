@@ -105,6 +105,10 @@ App {
     }
 
     function init() {
+        checkDevice();
+    }
+
+    function checkDevice() {
         isHapticFeedbackSupported = HapticFeedback.supported;
 
         let unixName = AppFramework.systemInformation.unixMachine;
