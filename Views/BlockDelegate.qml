@@ -1,14 +1,14 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
-import QtQuick.Layouts 1.3
-import QtGraphicalEffects 1.0
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.12
+import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.12
 
 import ArcGIS.AppFramework 1.0
 
 Item {
     width: parent.width
-    height: 94 * constants.scaleFactor
+    height: 94 * scaleFactor
 
     property string blockTitle: "Duration"
     property string numberContent: "1:39"
@@ -20,61 +20,73 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 20 * constants.scaleFactor
+            Layout.preferredHeight: 20 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
+
                 text: blockTitle
+
+                font.pixelSize: 16 * scaleFactor
+                color: colors.white_90
+
                 wrapMode: Text.Wrap
-                font.pixelSize: 16 * constants.scaleFactor
-                verticalAlignment: Text.AlignVCenter
+
                 horizontalAlignment: Text.AlignHCenter
-                color: colors.textColor
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 8 * constants.scaleFactor
+            Layout.preferredHeight: 8 * scaleFactor
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 38 * constants.scaleFactor
+            Layout.preferredHeight: 38 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
+
                 text: numberContent
-                wrapMode: Text.Wrap
-                font.pixelSize: 32 * constants.scaleFactor
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
+
+                font.pixelSize: 32 * scaleFactor
                 font.bold: true
-                color: colors.themeColor
+                color: colors.theme
+
+                wrapMode: Text.Wrap
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 8 * constants.scaleFactor
+            Layout.preferredHeight: 8 * scaleFactor
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 20 * constants.scaleFactor
+            Layout.preferredHeight: 20 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
+
                 text: blockUnits
+
+                font.pixelSize: 16 * scaleFactor
+                color: colors.white_90
+
                 wrapMode: Text.Wrap
-                font.pixelSize: 16 * constants.scaleFactor
+
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                color: colors.textColor
             }
         }
     }

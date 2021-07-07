@@ -25,6 +25,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 import ArcGIS.AppFramework 1.0
+import ArcGIS.AppFramework.Notifications 1.0
 
 import "Assets"
 import "Views"
@@ -32,10 +33,60 @@ import "Views"
 App {
     id: app
 
-    width: 375
-    height: 750
+    width: 400
+    height: 600
 
-    property alias colors: colors
+    readonly property real windowScaleFactor: {
+        const regex = /^(windows|unix|linux)$/;
+
+        if (Qt.platform.os.match(regex))
+            return AppFramework.displayScaleFactor;
+
+        return 1;
+    }
+
+    readonly property real scaleFactor: AppFramework.displayScaleFactor
+
+    property real maximumScreenWidth: {
+        if (width > 1000 * scaleFactor)
+            return 800 * scaleFactor;
+
+        return 568 * scaleFactor;
+    }
+
+    readonly property bool isDesktop: isWindows || isOSX || isLinux
+    readonly property bool isWindows: Qt.platform.os === "windows"
+    readonly property bool isOSX: Qt.platform.os === "osx"
+    readonly property bool isLinux: Qt.platform.os === "linux"
+    readonly property bool isiOS: Qt.platform.os === "ios"
+    readonly property bool isAndroid: Qt.platform.os === "android"
+
+    property bool isHapticFeedbackSupported: false
+    property bool isiPhone: false
+    property bool iPhoneNotchAvailable: false
+    property bool iPadNotchAvailable: false
+
+    property real topNotchHeight: {
+        if (iPhoneNotchAvailable)
+            return 40 * scaleFactor;
+
+        return 20 * scaleFactor;
+    }
+
+    property real bottomNotchHeight: {
+        if (iPhoneNotchAvailable || iPadNotchAvailable)
+            return 16 * scaleFactor;
+
+        return 0;
+    }
+
+    property var unixMachine
+
+    property bool isRightToLeft: AppFramework.localeInfo().esriName === "ar" || AppFramework.localeInfo().esriName === "he"
+
+    LandingPage{
+        anchors.fill: parent
+    }
 
     Constants {
         id: constants
@@ -49,8 +100,62 @@ App {
         id: colors
     }
 
-    LandingPage{
-        anchors.fill: parent
+    Component.onCompleted: {
+        init();
+    }
+
+    function init() {
+        isHapticFeedbackSupported = HapticFeedback.supported;
+
+        let unixName = AppFramework.systemInformation.unixMachine;
+
+        if (typeof unixName === "undefined")
+            return;
+
+        unixMachine = unixName;
+
+        if (unixMachine.match(/^iPhone/))
+            isiPhone = true;
+
+        switch (unixName) {
+        case "iPhone10,3":
+        case "iPhone10,6":
+        case "iPhone11,2":
+        case "iPhone11,4":
+        case "iPhone11,6":
+        case "iPhone11,8":
+        case "iPhone12,1":
+        case "iPhone12,3":
+        case "iPhone12,5":
+        case "iPhone13,1":
+        case "iPhone13,2":
+        case "iPhone13,3":
+        case "iPhone13,4":
+            iPhoneNotchAvailable = true;
+
+            break;
+
+        case "iPad8,1":
+        case "iPad8,2":
+        case "iPad8,3":
+        case "iPad8,4":
+        case "iPad8,5":
+        case "iPad8,6":
+        case "iPad8,7":
+        case "iPad8,8":
+        case "iPad8,9":
+        case "iPad8,10":
+        case "iPad8,11":
+        case "iPad8,12":
+        case "iPad13,1":
+        case "iPad13,2":
+            iPadNotchAvailable = true;
+
+            break;
+
+        default:
+            break;
+        }
     }
 }
 

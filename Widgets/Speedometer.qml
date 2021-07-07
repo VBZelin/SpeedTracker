@@ -34,7 +34,7 @@ CircularGauge {
 
             color:  {
                 if (styleData.value <= speedometer.value)
-                    return colors.pink;
+                    return colors.theme;
 
                 return colors.grey;
             }
@@ -48,7 +48,7 @@ CircularGauge {
 
             color: {
                 if (styleData.value <= speedometer.value)
-                    return colors.pink;
+                    return colors.theme;
 
                 return colors.grey;
             }
@@ -64,7 +64,7 @@ CircularGauge {
 
             color: {
                 if (styleData.value <= speedometer.value)
-                    return colors.pink;
+                    return colors.theme;
 
                 return colors.grey;
             }
@@ -87,7 +87,7 @@ CircularGauge {
                 context.lineTo(needle.width, needle.height);
                 context.closePath();
 
-                context.fillStyle = colors.pink;
+                context.fillStyle = colors.theme;
                 context.fill();
             }
         }
@@ -99,7 +99,7 @@ CircularGauge {
                 anchors.centerIn: parent
 
                 radius: width / 2
-                color: colors.pink
+                color: colors.theme
             }
         }
     }

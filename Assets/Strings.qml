@@ -1,7 +1,7 @@
-import QtQuick 2.9
+import QtQuick 2.15
 
-Item {
-    id: root
+QtObject {
+    id: strings
 
     readonly property string current_speed: "Current Speed"
     readonly property string speed_units: "mph"

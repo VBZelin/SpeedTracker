@@ -1,23 +1,25 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.3
-import QtQuick.Controls.Material 2.3
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.12
+import QtGraphicalEffects 1.12
 
 import ArcGIS.AppFramework 1.0
-import QtGraphicalEffects 1.0
-import QtQuick.Extras 1.4
-import Esri.ArcGISRuntime 100.10
 
-import "../Widgets" as Widgets
+import Esri.ArcGISRuntime 100.11
 
-Page {
+import "../Widgets"
+
+Item {
     id: mainPage
-    objectName: "mainPage"
-
-    Material.background: colors.black
 
     property int currentSpeed: 78
-    property string units: strings.speed_units
+
+    Rectangle {
+        anchors.fill: parent
+
+        color: colors.background
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -25,65 +27,79 @@ Page {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 16 * constants.scaleFactor
+            Layout.preferredHeight: app.isiOS ? app.topNotchHeight : 0
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 108 * constants.scaleFactor
+            Layout.preferredHeight: 16 * scaleFactor
+        }
+
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 108 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
+
                 text: strings.current_speed
+                font.pixelSize: 24 * scaleFactor
+                font.bold: true
+                color: colors.grey
+
                 wrapMode: Text.Wrap
-                font.pixelSize: 24 * constants.scaleFactor
+
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.bold: true
-                color: colors.titleTextColor
             }
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: app.height * 0.3
+            Layout.preferredHeight: app.height * 0.4
 
-            Widgets.Speedometer{
+            Speedometer{
                 anchors.fill: parent
             }
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 110 * constants.scaleFactor
+            Layout.preferredHeight: 110 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
+
                 text: currentSpeed
+                font.pixelSize: 88 * scaleFactor
+                font.bold: true
+                color: colors.theme
+
                 wrapMode: Text.Wrap
-                font.pixelSize: 88 * constants.scaleFactor
+
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.bold: true
-                color: colors.themeColor
             }
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 20 * constants.scaleFactor
+            Layout.preferredHeight: 20 * scaleFactor
 
             Label {
                 width: parent.width
                 height: parent.height
-                text: units
+
+                text: strings.speed_units
+                font.pixelSize: 16 * scaleFactor
+                color: colors.white_90
+
                 wrapMode: Text.Wrap
-                font.pixelSize: 16 * constants.scaleFactor
-                verticalAlignment: Text.AlignVCenter
+
                 horizontalAlignment: Text.AlignHCenter
-                color: colors.textColor
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -94,78 +110,81 @@ Page {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 94 * constants.scaleFactor
+            Layout.preferredHeight: 94 * scaleFactor
 
             GridLayout {
                 id: grid
 
-//                anchors.fill: parent
+                width: 296 * scaleFactor
                 height: parent.height
-                width: 296 * constants.scaleFactor
                 anchors.horizontalCenter: parent.horizontalCenter
                 columns: 3
 
                 columnSpacing: 0
 
                 BlockDelegate {
+                    Layout.preferredWidth: parent.width / 3
+                    Layout.fillHeight: true
+
                     blockTitle: strings.duration
                     numberContent: "1:39"
                     blockUnits: strings.duration_units
-
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: parent.width/3
                 }
 
                 BlockDelegate {
+                    Layout.preferredWidth: parent.width / 3
+                    Layout.fillHeight: true
+
                     blockTitle: strings.average_speed
                     numberContent: "90"
                     blockUnits: strings.speed_units
-
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: parent.width/3
                 }
 
                 BlockDelegate {
+                    Layout.preferredWidth: parent.width / 3
+                    Layout.fillHeight: true
+
                     blockTitle: strings.distance
                     numberContent: "114"
                     blockUnits: strings.distance_units
-
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: parent.width/3
                 }
             }
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 42 * constants.scaleFactor
+            Layout.preferredHeight: 42 * scaleFactor
         }
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 60 * constants.scaleFactor
+            Layout.preferredHeight: 60 * scaleFactor
 
             RowLayout {
+                width: 296 * scaleFactor
                 height: parent.height
-                width: 296 * constants.scaleFactor
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 0
 
                 Rectangle {
+                    Layout.preferredWidth:  60 * scaleFactor
                     Layout.fillHeight: true
-                    Layout.preferredWidth:  60 * constants.scaleFactor
-                    color: colors.transparentColor
-                    radius: 60 * constants.scaleFactor
+
+                    color: colors.transparent
+                    radius: 60 * scaleFactor
 
                     MapView {
                         id:mapView
+
                         anchors.fill: parent
+
                         zoomByPinchingEnabled: false
                         magnifierEnabled: false
                         allowMagnifierToPanMap: false
 
                         Map {
                             id: map
+
                             initUrl: "https://melbournedev.maps.arcgis.com/home/item.html?id=c13ec8570ed6403ab67729e932e70c69"
 
                             Component.onCompleted: {
@@ -183,54 +202,57 @@ Page {
                         id: opacityMask
 
                         anchors.fill: mapView
+
                         source: mapView
+
                         maskSource: Rectangle {
                             width: mapView.width
                             height: mapView.height
-                            radius: 60 * constants.scaleFactor
+                            radius: 60 * scaleFactor
                             visible: false // this also needs to be invisible or it will cover up the image
                         }
                     }
                 }
 
                 Item {
-                    Layout.preferredWidth:  46 * constants.scaleFactor
+                    Layout.preferredWidth:  46 * scaleFactor
                     Layout.fillHeight: true
                 }
 
                 Rectangle {
-                    Layout.preferredWidth: 188 * constants.scaleFactor
+                    Layout.preferredWidth: 188 * scaleFactor
                     Layout.fillHeight: true
 
-                    border.width: 3 * constants.scaleFactor
-                    color: colors.transparentColor
-                    border.color: colors.themeColor
-                    radius: 30 * constants.scaleFactor
-//                    opacity: dataServiceManager.isBusy ? 0.3 : 1
+                    border.width: 3 * scaleFactor
+                    color: colors.transparent
+                    border.color: colors.theme
+                    radius: 30 * scaleFactor
 
                     Label {
                         id: signOutLabel
 
                         width: parent.width
                         height: parent.height
+                        clip: true
 
                         text: strings.stop
-                        color: colors.themeColor
-                        font.pixelSize: 24 * constants.scaleFactor
+                        color: colors.theme
+                        font.pixelSize: 24 * scaleFactor
                         font.bold:true
                         elide: Text.ElideLeft
-                        clip: true
 
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    Widgets.TouchGestureArea {
+                    TouchGestureArea {
                         anchors.fill: parent
-                        radius: 20 * constants.scaleFactor
-                        color: colors.transparentColor
 
-                        onClicked:{}
+                        radius: 20 * scaleFactor
+                        color: colors.transparent
+
+                        onClicked:{
+                        }
                     }
                 }
             }
@@ -238,8 +260,7 @@ Page {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40 * constants.scaleFactor
+            Layout.preferredHeight: 40 * scaleFactor
         }
     }
-
 }
