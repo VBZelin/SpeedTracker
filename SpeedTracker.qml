@@ -26,23 +26,31 @@ import QtQuick.Controls 2.15
 
 import ArcGIS.AppFramework 1.0
 
-import "assets"
-import "pages"
+import "Assets"
+import "Views"
 
 App {
     id: app
 
-    width: 400
-    height: 640
+    width: 375
+    height: 750
 
     property alias colors: colors
+
+    Constants {
+        id: constants
+    }
+
+    Strings {
+        id: strings
+    }
 
     Colors {
         id: colors
     }
 
-    MainUI {
-        id: mainUI
+    LandingPage{
+        anchors.fill: parent
     }
 }
 
