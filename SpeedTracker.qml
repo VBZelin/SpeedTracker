@@ -84,8 +84,8 @@ App {
 
     property bool isRightToLeft: AppFramework.localeInfo().esriName === "ar" || AppFramework.localeInfo().esriName === "he"
 
-    LandingPage{
-        anchors.fill: parent
+    MainUI {
+        id: mainUI
     }
 
     Constants {

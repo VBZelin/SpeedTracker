@@ -11,7 +11,9 @@ import Esri.ArcGISRuntime 100.11
 import "../Widgets"
 
 Item {
-    id: mainPage
+    id: mainUI
+
+    anchors.fill: parent
 
     property int currentSpeed: 78
 
@@ -37,27 +39,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 108 * scaleFactor
-
-            Label {
-                width: parent.width
-                height: parent.height
-
-                text: strings.current_speed
-                font.pixelSize: 24 * scaleFactor
-                font.bold: true
-                color: colors.grey
-
-                wrapMode: Text.Wrap
-
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-            }
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: app.height * 0.4
+            Layout.preferredHeight: width * 0.8
 
             Speedometer{
                 anchors.fill: parent

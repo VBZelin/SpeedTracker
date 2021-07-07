@@ -3,7 +3,6 @@ import QtQuick 2.15
 QtObject {
     id: strings
 
-    readonly property string current_speed: "Current Speed"
     readonly property string speed_units: "mph"
     readonly property string duration: "Duration"
     readonly property string duration_units: "hours"
