@@ -8,6 +8,8 @@ import Esri.ArcGISRuntime 100.11;
 Item {
     id: dataManager
 
+    property bool isCapturing: false
+
     property string trackId: ""
 
     property real distance: 0
@@ -19,14 +21,16 @@ Item {
     property var geometry: ({})
     property var metadata: ({})
 
+    readonly property int kWGS84: 4326
+
     AppDb {
         id: db
 
         function init() {
             exec("PRAGMA foreign_keys = ON;");
 
-            exec("CREATE TABLE IF NOT EXISTS Tracks (TrackId TEXT UNIQUE, Geometry TEXT, Metadata TEXT");
-            exec("CREATE TABLE IF NOT EXISTS Points (TrackId TEXT, Timestamp NUMBER, Latitude NUMBER, Longitude NUMBER, Altitude NUMBER, Metadata TEXT, FOREIGN KEY(TrackId) REFERENCES Tracks(TrackId) ON UPDATE CASCADE ON DELETE CASCADE)");
+            exec("CREATE TABLE IF NOT EXISTS Tracks (TrackId TEXT UNIQUE, Geometry TEXT, Metadata TEXT);");
+            exec("CREATE TABLE IF NOT EXISTS Points (TrackId TEXT, Timestamp NUMBER, Latitude NUMBER, Longitude NUMBER, Altitude NUMBER, Metadata TEXT, FOREIGN KEY(TrackId) REFERENCES Tracks(TrackId) ON UPDATE CASCADE ON DELETE CASCADE);");
         }
 
         function sqlQuery(string) {
@@ -44,7 +48,7 @@ Item {
             path = "~/ArcGIS/%1".arg("SpeedTracker");
             makeFolder();
 
-            if (!fileExists(".nomedia") && app.deviceManager.isAndroid)
+            if (!fileExists(".nomedia") && app.isAndroid)
                 writeFile(".nomedia", "");
         }
     }
@@ -56,17 +60,21 @@ Item {
         db.init();
     }
 
-    function startCapture(position, callback) {
-        reset();
+    function startCapture(location, callback) {
+        clearPreviousData();
+
+        isCapturing = true;
+
+        let position = location.position;
+        let curSpeed = location.velocity * 2.23694;
 
         trackId = AppFramework.createUuidString(0).toUpperCase();
 
         let timestamp = getTimestamp();
 
-        let coordinate = position.coordinate;
-        let y = coordinate.latitude;
-        let x = coordinate.longitude;
-        let z = coordinate.altitude;
+        let y = position.y;
+        let x = position.x;
+        let z = position.z;
 
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
@@ -93,7 +101,8 @@ Item {
             startTime: timestamp,
             endTime: "N/A",
             distance: 0,
-            avgSpeed: 0
+            avgSpeed: 0,
+            curSpeed: curSpeed
         };
 
         db.exec(queries.tracks.insert, {
@@ -112,17 +121,20 @@ Item {
 
         callback({
                      geometry: geometry,
-                     pointObj: pointObj
+                     pointObj: pointObj,
+                     metadata: metadata
                  });
     }
 
-    function trackCapture(position, callback) {
+    function trackCapture(location, callback) {
+        let position = location.position;
+        let curSpeed = location.velocity * 2.23694;
+
         let timestamp = getTimestamp();
 
-        let coordinate = position.coordinate;
-        let y = coordinate.latitude;
-        let x = coordinate.longitude;
-        let z = coordinate.altitude;
+        let y = position.y;
+        let x = position.x;
+        let z = position.z;
 
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
@@ -134,7 +146,7 @@ Item {
         let step = GeometryEngine.distance(GeometryEngine.project(pointObj, Factory.SpatialReference.createWebMercator()),
                                            GeometryEngine.project(lastPointObj, Factory.SpatialReference.createWebMercator()));
 
-        distance += step;
+        distance += step * 0.000621371;
 
         lastPointObj = pointObj;
 
@@ -146,9 +158,10 @@ Item {
 
         let elapsedSeconds = (metadata.startTime - timestamp) / 1000;
 
-        metadata.avgSpeed = distance / elapsedSeconds;
+        metadata.avgSpeed = distance / elapsedSeconds * 3600;
         metadata.endTime = timestamp;
         metadata.distance = distance;
+        metadata.curSpeed = curSpeed;
 
         db.exec(queries.tracks.update, {
                     trackId: trackId,
@@ -166,15 +179,22 @@ Item {
 
         callback({
                      geometry: geometry,
-                     pointObj: pointObj
+                     pointObj: pointObj,
+                     metadata: metadata
                  });
     }
 
-    function endCapture(position, callback) {
-        let coordinate = position.coordinate;
-        let y = coordinate.latitude;
-        let x = coordinate.longitude;
-        let z = coordinate.altitude;
+    function endCapture(location, callback) {
+        isCapturing = false;
+
+        let position = location.position;
+        let curSpeed = location.velocity * 2.23694;
+
+        let timestamp = getTimestamp();
+
+        let y = position.y;
+        let x = position.x;
+        let z = position.z;
 
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
@@ -186,7 +206,7 @@ Item {
         let step = GeometryEngine.distance(GeometryEngine.project(pointObj, Factory.SpatialReference.createWebMercator()),
                                            GeometryEngine.project(lastPointObj, Factory.SpatialReference.createWebMercator()));
 
-        distance += step;
+        distance += step * 0.000621371;
 
         lastPointObj = pointObj;
 
@@ -197,7 +217,7 @@ Item {
         let count = pointsArr.count;
 
         if (count < 2) {
-            reset();
+            clearPreviousData();
 
             db.exec(queries.tracks._delete, {
                         trackId: trackId
@@ -210,9 +230,10 @@ Item {
 
         let elapsedSeconds = (metadata.startTime - timestamp) / 1000;
 
-        metadata.avgSpeed = distance / elapsedSeconds;
+        metadata.avgSpeed = distance / elapsedSeconds * 3600;
         metadata.endTime = timestamp;
         metadata.distance = distance;
+        metadata.curSpeed = curSpeed;
 
         db.exec(queries.tracks.update, {
                     trackId: trackId,
@@ -230,7 +251,8 @@ Item {
 
         callback({
                      geometry: geometry,
-                     pointObj: pointObj
+                     pointObj: pointObj,
+                     metadata: metadata
                  });
     }
 
@@ -240,7 +262,7 @@ Item {
         return date.getTime();
     }
 
-    function reset() {
+    function clearPreviousData() {
         trackId = "";
         lastPointObj = null;
         distance = 0;

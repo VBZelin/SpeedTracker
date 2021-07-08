@@ -19,8 +19,15 @@ Item {
 
     property url webMapUrl: "https://melbournedev.maps.arcgis.com/home/item.html?id=c13ec8570ed6403ab67729e932e70c69"
 
+    property var lastLocation
+
+    property var tempPolylineGraphicsOverlay
+    property var polylineGraphicsOverlay
+
+    property var polylineBuilder
+
+    signal newLocation(var location)
     signal back()
-    signal currentSpeedChanged(var speed)
 
     MapView {
         id:mapView
@@ -42,8 +49,28 @@ Item {
         Component.onCompleted: {
             zoomToLocation();
 
-            speedTimer.start();
+            locationTimer.start();
         }
+    }
+
+    SimpleLineSymbol {
+        id: polylineSymbol
+
+        width: 4 * scaleFactor
+
+        style: Enums.SimpleLineSymbolStyleSolid
+        color: colors.theme
+        antiAlias: true
+    }
+
+    SimpleLineSymbol {
+        id: tempPolylineSymbol
+
+        width: 4 * scaleFactor
+
+        style: Enums.SimpleLineSymbolStyleDash
+        color: colors.theme
+        antiAlias: true
     }
 
     Rectangle {
@@ -95,29 +122,100 @@ Item {
     }
 
     Timer {
-        id: speedTimer
+        id: locationTimer
 
-        interval: 1000
         repeat: true
 
         onTriggered: {
-            getCurrentSpeed();
+            getLocation();
         }
+    }
+
+    Component.onCompleted: {
+        syncAllGraphics();
+    }
+
+    function syncAllGraphics() {
+        resetAllGraphicsOverlays();
+
+        mapView.graphicsOverlays.append(polylineGraphicsOverlay);
+        mapView.graphicsOverlays.append(tempPolylineGraphicsOverlay);
+    }
+
+    function startPolyRendering(obj) {
+        resetAllGraphicsOverlays();
+
+        let geometry = obj.geometry;
+
+        polylineBuilder = ArcGISRuntimeEnvironment.createObject("PolylineBuilder", {
+                                                                    geometry: ArcGISRuntimeEnvironment.createObject("Polyline", {
+                                                                                                                        json: geometry
+                                                                                                                    })
+                                                                });
+
+        let graphic = createGraphic(polylineBuilder.geometry, tempPolylineSymbol);
+
+        tempPolylineGraphicsOverlay.graphics.append(graphic);
+    }
+
+    function trackPolyRendering(obj) {
+        let pointObj = obj.pointObj;
+
+        polylineBuilder.addPoint(pointObj);
+
+        let graphic = tempPolylineGraphicsOverlay.graphics.get(0);
+
+        graphic.geometry = polylineBuilder.geometry;
+    }
+
+    function endPolyRendering(pointObj) {
+        tempPolylineGraphicsOverlay.graphics.remove(0);
+
+        let graphic = createGraphic(polylineBuilder.geometry, polylineSymbol);
+
+        polylineGraphicsOverlay.graphics.append(graphic);
+    }
+
+    function createGraphic(geometry, symbol) {
+        let graphic = ArcGISRuntimeEnvironment.createObject("Graphic");
+
+        graphic.geometry = geometry;
+        graphic.symbol = symbol;
+
+        return graphic;
     }
 
     function zoomToLocation(){
         if (mapView.locationDisplay.started)
             return;
 
-        mapView.locationDisplay.start();
         mapView.locationDisplay.autoPanMode = Enums.LocationDisplayAutoPanModeRecenter;
+        mapView.locationDisplay.start();
     }
 
 
-    function getCurrentSpeed(){
-        let newSpeed = mapView.locationDisplay.location.velocity * 2.23694;
+    function getLocation(){
+        lastLocation = mapView.locationDisplay.location;
 
-        currentSpeedChanged(newSpeed);
+        newLocation(lastLocation);
+    }
+
+    function resetAllGraphicsOverlays() {
+        if (tempPolylineGraphicsOverlay)
+            tempPolylineGraphicsOverlay.graphics.clear();
+        else
+            tempPolylineGraphicsOverlay = ArcGISRuntimeEnvironment.createObject("GraphicsOverlay", {
+                                                                                    renderingMode: Enums.GraphicsRenderingModeStatic
+                                                                                });
+
+        if (polylineGraphicsOverlay)
+            polylineGraphicsOverlay.graphics.clear();
+        else
+            polylineGraphicsOverlay = ArcGISRuntimeEnvironment.createObject("GraphicsOverlay", {
+                                                                                renderingMode: Enums.GraphicsRenderingModeStatic
+                                                                            });
+
+        polylineBuilder = {};
     }
 
     function open() {

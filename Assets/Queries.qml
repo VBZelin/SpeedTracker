@@ -4,6 +4,7 @@ Item {
     id: queries
 
     property alias tracks: tracks
+    property alias points: points
 
     QtObject {
         id: tracks

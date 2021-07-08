@@ -135,6 +135,7 @@ App {
 
     function init() {
         checkDevice();
+        initDataManager();
         grantLocationPermission();
     }
 
@@ -190,6 +191,10 @@ App {
         default:
             break;
         }
+    }
+
+    function initDataManager() {
+        dataManager.init();
     }
 
     function grantLocationPermission() {
