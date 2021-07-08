@@ -17,12 +17,29 @@ Item {
 
     property bool timerStarted: false
 
-    property var duration
+    property string duration: "0"
+
+    property int elapsedSeconds: 0
+    property int days: 0
+    property int hours: 0
+    property int minutes: 0
 
     property int curSpeed: 78
     property int avgSpeed: 0
 
     property real distance: 0
+
+    onTimerStartedChanged: {
+        if (timerStarted) {
+            duration = "00:00";
+
+            startTimeCapture();
+
+            return;
+        }
+
+        stopTimeCapture();
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -61,7 +78,7 @@ Item {
             ColumnLayout {
                 width: parent.width
                 anchors.bottom: speedometer.bottom
-                anchors.bottomMargin: -height / 3
+                anchors.bottomMargin: -implicitHeight / 3
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 0
 
@@ -126,7 +143,13 @@ Item {
 
                     title: strings.duration
                     value: duration
-                    unit: strings.duration_units
+
+                    unit: {
+                        if (days > 0)
+                            return strings.days;
+
+                        return strings.hours;
+                    }
                 }
 
                 BlockDelegate {
@@ -282,5 +305,63 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 48 * scaleFactor + app.bottomNotchHeight
         }
+    }
+
+    Timer {
+        id: timer
+
+        running: false
+        repeat: true
+
+        onTriggered: {
+            elapsedSeconds += 3600;
+
+            duration = getDuration(elapsedSeconds);
+        }
+    }
+
+    function startTimeCapture() {
+        reset();
+
+        timer.start();
+    }
+
+    function stopTimeCapture() {
+        timer.stop();
+    }
+
+    function reset() {
+        elapsedSeconds = 0;
+        days = 0;
+        hours = 0;
+        minutes = 0;
+        avgSpeed = 0;
+        distance = 0;
+    }
+
+    function getDuration(seconds) {
+        days = Math.floor(seconds / 24 / 60 / 60);
+
+        let hoursLeft = Math.floor((seconds) - (days * 86400));
+
+        hours = Math.floor(hoursLeft / 3600);
+
+        let minutesLeft = Math.floor((hoursLeft) - (hours * 3600));
+
+        minutes = Math.floor(minutesLeft / 60);
+
+        let secondsLeft = seconds % 60;
+
+        if (days > 0)
+            return "%1:%2".arg(format(days)).arg(format(hours));
+
+        if (hours > 0)
+            return "%1:%2".arg(format(hours)).arg(format(minutes));
+
+        return "%1:%2".arg(format(minutes)).arg(format(secondsLeft));
+    }
+
+    function format(num) {
+        return (num < 10 ? "0" + num : num);
     }
 }
