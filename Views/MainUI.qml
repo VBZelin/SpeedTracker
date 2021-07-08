@@ -15,8 +15,14 @@ Item {
 
     anchors.fill: parent
 
-    property int currentSpeed: 78
     property bool timerStarted: false
+
+    property var duration
+
+    property int curSpeed: 78
+    property int avgSpeed: 0
+
+    property real distance: 0
 
     Rectangle {
         anchors.fill: parent
@@ -62,7 +68,7 @@ Item {
                 Label {
                     Layout.alignment: Qt.AlignHCenter
 
-                    text: currentSpeed
+                    text: curSpeed
                     font.family: fonts.demi_fontFamily
                     font.pixelSize: 88 * scaleFactor
                     font.bold: true
@@ -119,7 +125,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.duration
-                    value: "1:39"
+                    value: duration
                     unit: strings.duration_units
                 }
 
@@ -128,7 +134,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.average_speed
-                    value: "90"
+                    value: avgSpeed
                     unit: strings.speed_units
                 }
 
@@ -137,7 +143,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.distance
-                    value: "114"
+                    value: distance
                     unit: strings.distance_units
                 }
             }
