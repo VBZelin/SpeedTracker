@@ -358,7 +358,7 @@ Item {
         app.dataManager.startCapture(mapPopup.lastLocation, (obj) => {
                                          let metadata = obj.metadata;
 
-                                         distance = metadata.distance;
+                                         distance = metadata.distance.toFixed(2);
                                          avgSpeed = metadata.avgSpeed;
                                          curSpeed = metadata.curSpeed;
 
