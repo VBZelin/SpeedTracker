@@ -167,7 +167,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.distance
-                    value: distance
+                    value: distance.toFixed(2)
                     unit: strings.distance_units
                 }
             }
@@ -358,7 +358,7 @@ Item {
         app.dataManager.startCapture(mapPopup.lastLocation, (obj) => {
                                          let metadata = obj.metadata;
 
-                                         distance = metadata.distance.toFixed(2);
+                                         distance = metadata.distance;
                                          avgSpeed = metadata.avgSpeed;
                                          curSpeed = metadata.curSpeed;
 
