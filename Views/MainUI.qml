@@ -213,6 +213,7 @@ Item {
                         color: colors.transparent
 
                         onClicked:{
+                            isStarted = !isStarted;
                         }
                     }
                 }
@@ -249,6 +250,7 @@ Item {
                         color: colors.transparent
 
                         onClicked:{
+                            isStarted = !isStarted;
                         }
                     }
                 }
