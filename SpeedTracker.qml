@@ -33,8 +33,8 @@ import "Views"
 App {
     id: app
 
-    width: 400
-    height: 600
+    width: 375
+    height: 750
 
     readonly property real windowScaleFactor: {
         const regex = /^(windows|unix|linux)$/;
@@ -98,6 +98,10 @@ App {
 
     Colors {
         id: colors
+    }
+
+    Images {
+        id: images
     }
 
     Component.onCompleted: {

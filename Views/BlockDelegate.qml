@@ -55,7 +55,7 @@ Item {
 
                 font.pixelSize: 32 * scaleFactor
                 font.bold: true
-                color: colors.theme
+                color: text === "0" ? colors.white_90 : colors.theme
 
                 wrapMode: Text.Wrap
 

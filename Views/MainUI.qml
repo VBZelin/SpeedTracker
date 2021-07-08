@@ -16,6 +16,7 @@ Item {
     anchors.fill: parent
 
     property int currentSpeed: 78
+    property bool isStarted: false
 
     Rectangle {
         anchors.fill: parent
@@ -34,7 +35,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 16 * scaleFactor
+            Layout.preferredHeight: 48 * scaleFactor
         }
 
         Item {
@@ -48,7 +49,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 110 * scaleFactor
+            Layout.preferredHeight: 100 * scaleFactor
 
             Label {
                 width: parent.width
@@ -152,47 +153,24 @@ Item {
                     Layout.preferredWidth:  60 * scaleFactor
                     Layout.fillHeight: true
 
-                    color: colors.transparent
+                    color: colors.white_15
                     radius: 60 * scaleFactor
 
-                    MapView {
+
+                    Image {
                         id:mapView
 
-                        anchors.fill: parent
-
-                        zoomByPinchingEnabled: false
-                        magnifierEnabled: false
-                        allowMagnifierToPanMap: false
-
-                        Map {
-                            id: map
-
-                            initUrl: "https://melbournedev.maps.arcgis.com/home/item.html?id=c13ec8570ed6403ab67729e932e70c69"
-
-                            Component.onCompleted: {
-                                mapView.setViewpointScale(400000000);
-                            }
-                        }
-
-                        layer.enabled: true
-                        layer.effect: OpacityMask {
-                            maskSource: opacityMask
-                        }
+                        width: 36 * scaleFactor
+                        height: width
+                        source: images.map_thumbnail
+                        mipmap: true
+                        anchors.centerIn: parent
                     }
 
-                    OpacityMask {
-                        id: opacityMask
-
+                    ColorOverlay {
                         anchors.fill: mapView
-
                         source: mapView
-
-                        maskSource: Rectangle {
-                            width: mapView.width
-                            height: mapView.height
-                            radius: 60 * scaleFactor
-                            visible: false // this also needs to be invisible or it will cover up the image
-                        }
+                        color: colors.white
                     }
                 }
 
@@ -202,6 +180,7 @@ Item {
                 }
 
                 Rectangle {
+                    visible: isStarted
                     Layout.preferredWidth: 188 * scaleFactor
                     Layout.fillHeight: true
 
@@ -211,7 +190,7 @@ Item {
                     radius: 30 * scaleFactor
 
                     Label {
-                        id: signOutLabel
+                        id: stopLabel
 
                         width: parent.width
                         height: parent.height
@@ -219,6 +198,42 @@ Item {
 
                         text: strings.stop
                         color: colors.theme
+                        font.pixelSize: 24 * scaleFactor
+                        font.bold:true
+                        elide: Text.ElideLeft
+
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    TouchGestureArea {
+                        anchors.fill: parent
+
+                        radius: 20 * scaleFactor
+                        color: colors.transparent
+
+                        onClicked:{
+                        }
+                    }
+                }
+
+                Rectangle {
+                    visible: !isStarted
+                    Layout.preferredWidth: 188 * scaleFactor
+                    Layout.fillHeight: true
+
+                    color: colors.theme
+                    radius: 30 * scaleFactor
+
+                    Label {
+                        id: startLabel
+
+                        width: parent.width
+                        height: parent.height
+                        clip: true
+
+                        text: strings.start
+                        color:  colors.white
                         font.pixelSize: 24 * scaleFactor
                         font.bold:true
                         elide: Text.ElideLeft
