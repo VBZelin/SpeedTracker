@@ -13,7 +13,6 @@ Item {
     id: mapPopup
 
     property url webMapUrl: "https://melbournedev.maps.arcgis.com/home/item.html?id=c13ec8570ed6403ab67729e932e70c69"
-    property bool startRecord: false
 
     signal backBtnClicked()
     signal currentSpeedChanged(var speed)
@@ -34,10 +33,12 @@ Item {
             positionSource: PositionSource {
                 id: devicePositionSource
             }
+
         }
 
         Component.onCompleted: {
             zoomToLocation();
+            speedTimer.start();
         }
 
     }
@@ -100,11 +101,6 @@ Item {
         onTriggered: {
             getCurrentSpeed();
         }
-    }
-
-    onStartRecordChanged:{
-        if(startRecord) speedTimer.start();
-        else speedTimer.stop();
     }
 
     function zoomToLocation(){

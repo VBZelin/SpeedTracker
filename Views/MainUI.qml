@@ -61,7 +61,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 48 * scaleFactor
+            Layout.preferredHeight: 32 * scaleFactor
         }
 
         Item {
@@ -300,7 +300,6 @@ Item {
                         onClicked:{
                             if(checkLocationPermission()){
                                 timerStarted = !timerStarted;
-                                mapPopup.startRecord = !mapPopup.startRecord;
                             }
                         }
                     }
