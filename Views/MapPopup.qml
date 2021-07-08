@@ -13,7 +13,10 @@ Item {
     id: mapPopup
 
     property url webMapUrl: "https://melbournedev.maps.arcgis.com/home/item.html?id=c13ec8570ed6403ab67729e932e70c69"
+    property bool startRecord: false
+
     signal backBtnClicked()
+    signal currentSpeedChanged(var speed)
 
     anchors.fill: parent
 
@@ -88,10 +91,34 @@ Item {
         }
     }
 
+    Timer {
+        id: speedTimer
+
+        interval: 1000
+        repeat: true
+
+        onTriggered: {
+            getCurrentSpeed();
+        }
+    }
+
+    onStartRecordChanged:{
+        if(startRecord) speedTimer.start();
+        else speedTimer.stop();
+    }
+
     function zoomToLocation(){
         if (!mapView.locationDisplay.started) {
             mapView.locationDisplay.start();
             mapView.locationDisplay.autoPanMode = Enums.LocationDisplayAutoPanModeRecenter;
         }
+    }
+
+
+    function getCurrentSpeed(){
+        var newSpeed = mapView.locationDisplay.location.velocity * 2.23694;
+
+        console.log(mapView.locationDisplay.location.velocity * 2.23694)
+        currentSpeedChanged(newSpeed);
     }
 }

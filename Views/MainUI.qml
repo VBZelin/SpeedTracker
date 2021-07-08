@@ -25,7 +25,7 @@ Item {
     property int hours: 0
     property int minutes: 0
 
-    property int curSpeed: 78
+    property int curSpeed: 0
     property int avgSpeed: 0
 
     property real distance: 0
@@ -298,8 +298,10 @@ Item {
                         radius: parent.radius
 
                         onClicked:{
-                            if(checkLocationPermission())
+                            if(checkLocationPermission()){
                                 timerStarted = !timerStarted;
+                                mapPopup.startRecord = !mapPopup.startRecord;
+                            }
                         }
                     }
                 }
@@ -320,6 +322,10 @@ Item {
 
         onBackBtnClicked: {
             showMapPopup = false;
+        }
+
+        onCurrentSpeedChanged: {
+            curSpeed = speed;
         }
     }
 
