@@ -30,18 +30,16 @@ Item {
 
     property real distance: 0
 
-    property bool showMapPopup: false
-
     onTimerStartedChanged: {
         if (timerStarted) {
             duration = "00:00";
 
-            startTimeCapture();
+            startCapture();
 
             return;
         }
 
-        stopTimeCapture();
+        stopCapture();
     }
 
     Rectangle {
@@ -225,8 +223,8 @@ Item {
                         radius: parent.radius
 
                         onClicked:{
-                            if(checkLocationPermission())
-                                showMapPopup = true;
+                            if (checkLocationPermission())
+                                mapPopup.open();
                         }
                     }
                 }
@@ -317,10 +315,9 @@ Item {
         id: mapPopup
 
         anchors.fill: parent
-        visible: showMapPopup
 
-        onBackBtnClicked: {
-            showMapPopup = false;
+        onBack: {
+            close();
         }
 
         onCurrentSpeedChanged: {
@@ -328,27 +325,28 @@ Item {
         }
     }
 
+    // timer
     Timer {
-        id: timer
+        id: displayTimer
 
         running: false
         repeat: true
 
         onTriggered: {
-            elapsedSeconds += 3600;
+            elapsedSeconds += 1;
 
             duration = getDuration(elapsedSeconds);
         }
     }
 
-    function startTimeCapture() {
+    function startCapture() {
         reset();
 
-        timer.start();
+        displayTimer.start();
     }
 
-    function stopTimeCapture() {
-        timer.stop();
+    function stopCapture() {
+        displayTimer.stop();
     }
 
     function reset() {
@@ -387,11 +385,12 @@ Item {
     }
 
     function checkLocationPermission(){
-        if(isiOS || isAndroid) {
-            if (Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse) !== Permission.PermissionResultGranted){
-                console.log(Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse))
+        if (isiOS || isAndroid) {
+            if (Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse) !== Permission.PermissionResultGranted)
                 return false;
-            } else return true;
-        } else return true;
+            else
+                return true;
+        } else
+            return true;
     }
 }

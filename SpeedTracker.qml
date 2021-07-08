@@ -30,6 +30,7 @@ import ArcGIS.AppFramework.Platform 1.0
 import Esri.ArcGISRuntime 100.11
 
 import "Assets"
+import "Controls"
 import "Views"
 
 App {
@@ -86,6 +87,12 @@ App {
 
     property bool isRightToLeft: AppFramework.localeInfo().esriName === "ar" || AppFramework.localeInfo().esriName === "he"
 
+    property alias dataManager: dataManager
+
+    DataManager {
+        id: dataManager
+    }
+
     MainUI {
         id: mainUI
     }
@@ -104,6 +111,10 @@ App {
 
     Images {
         id: images
+    }
+
+    Queries {
+        id: queries
     }
 
     Strings {
