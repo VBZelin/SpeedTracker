@@ -7,12 +7,11 @@ import QtGraphicalEffects 1.12
 import ArcGIS.AppFramework 1.0
 
 Item {
-    width: parent.width
-    height: 94 * scaleFactor
+    id: blockDelegate
 
-    property string blockTitle: "Duration"
-    property string numberContent: "1:39"
-    property string blockUnits: "hours"
+    property string title: ""
+    property string value: ""
+    property string unit: ""
 
     ColumnLayout {
         anchors.fill: parent
@@ -26,15 +25,18 @@ Item {
                 width: parent.width
                 height: parent.height
 
-                text: blockTitle
-
+                text: title
+                font.family: fonts.regular_fontFamily
                 font.pixelSize: 16 * scaleFactor
+                font.letterSpacing: -0.3 * scaleFactor
                 color: colors.white_90
 
                 wrapMode: Text.Wrap
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+
+                antialiasing: true
             }
         }
 
@@ -51,16 +53,19 @@ Item {
                 width: parent.width
                 height: parent.height
 
-                text: numberContent
-
+                text: value
+                font.family: fonts.demi_fontFamily
                 font.pixelSize: 32 * scaleFactor
                 font.bold: true
+                font.letterSpacing: -0.3 * scaleFactor
                 color: text === "0" ? colors.white_90 : colors.theme
 
                 wrapMode: Text.Wrap
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+
+                antialiasing: true
             }
         }
 
@@ -78,15 +83,18 @@ Item {
                 width: parent.width
                 height: parent.height
 
-                text: blockUnits
-
+                text: unit
+                font.family: fonts.regular_fontFamily
                 font.pixelSize: 16 * scaleFactor
+                font.letterSpacing: -0.3 * scaleFactor
                 color: colors.white_90
 
                 wrapMode: Text.Wrap
 
-                verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                antialiasing: true
             }
         }
     }

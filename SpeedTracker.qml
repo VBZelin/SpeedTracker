@@ -88,20 +88,24 @@ App {
         id: mainUI
     }
 
-    Constants {
-        id: constants
-    }
-
-    Strings {
-        id: strings
-    }
-
     Colors {
         id: colors
     }
 
+    Constants {
+        id: constants
+    }
+
+    Fonts {
+        id: fonts
+    }
+
     Images {
         id: images
+    }
+
+    Strings {
+        id: strings
     }
 
     Component.onCompleted: {

@@ -9,6 +9,6 @@ QtObject {
     readonly property string average_speed: "AVG Speed"
     readonly property string distance: "Distance"
     readonly property string distance_units: "mi"
-    readonly property string start: "Start"
-    readonly property string stop: "Stop"
+    readonly property string start: "START"
+    readonly property string stop: "STOP"
 }

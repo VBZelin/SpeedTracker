@@ -1,19 +1,22 @@
 import QtQuick 2.15
+import QtQuick.Controls 2.15
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
 
 CircularGauge {
     id: speedometer
 
-    anchors.centerIn: parent
-
     minimumValue: 0
     maximumValue: 200
+    stepSize: 10
 
     style: CircularGaugeStyle {
         id: style
 
+        labelStepSize: 20
         minorTickmarkCount: 2
+        minimumValueAngle: -120
+        maximumValueAngle: 120
 
         tickmark: Rectangle {
             visible: styleData.value % 10 == 0
@@ -56,11 +59,12 @@ CircularGauge {
             antialiasing: true
         }
 
-        tickmarkLabel:  Text {
-            visible: styleData.value % 20 == 0
-
-            font.pixelSize: outerRadius * 0.1
+        tickmarkLabel: Label {
             text: styleData.value
+
+            font.family: fonts.regular_fontFamily
+            font.pixelSize: outerRadius * 0.1
+            font.letterSpacing: -0.3 * scaleFactor
 
             color: {
                 if (styleData.value <= speedometer.value)

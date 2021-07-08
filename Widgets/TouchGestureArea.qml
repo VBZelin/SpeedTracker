@@ -1,84 +1,76 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.12
 
-import ArcGIS.AppFramework 1.0
+import QtQuick.Controls.Material.impl 2.15
 
-Rectangle {
+MouseArea {
     id: root
 
-    property color shadowColor: colors.black_100
+    hoverEnabled: true
 
-    property bool isPressed: state === "Pressed"
-    property bool isEnabled: true
+    pressAndHoldInterval: 3000
 
-    property real normalOpacity: 0.0
-    property real pressOpacity: 0.12
+    property real radius: parent.radius || 0
 
-    signal clicked()
-    signal hold()
+    property color color: colors.ripple
+
+    property bool isHovered: false
+    property bool rippleEnabled: true
+
+    clip: true
 
     Item {
-        anchors.fill: parent
-    }
-
-    Rectangle {
-        id: background
+        visible: rippleEnabled
 
         anchors.fill: parent
 
-        radius: root.radius
-        color: shadowColor
-        opacity: 0
-    }
+        Rectangle {
+            id: mask
 
-    states: [
-        State {
-            name: "Pressed"
+            visible: false
 
-            PropertyChanges {
-                target: background
-                opacity: pressOpacity
+            anchors.fill: parent
+
+            radius: root.radius
+            color: colors.white
+        }
+
+        Item {
+            anchors.fill: parent
+            clip: true
+
+            Ripple {
+                width: parent.width
+                height: parent.height
+
+                anchor: root
+                clipRadius: 2 * scaleFactor
+                pressed: root.pressed
+                active: root.pressed || root.activeFocus || root.isHovered
+                color: root.color
+            }
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: mask
             }
         }
-    ]
+    }
 
-    transitions: [
-        Transition {
-            from: "";
-            to: "Pressed"
+    onHoverEnabledChanged: {
+        if (!hoverEnabled)
+            isHovered = false;
+    }
 
-            OpacityAnimator {
-                duration: constants.normalDuration
-            }
-        }
-    ]
+    onEntered: {
+        isHovered = true;
+    }
 
-    MouseArea {
-        anchors.fill: parent
+    onExited: {
+        isHovered = false;
+    }
 
-        onPressed: {
-            if (root.isEnabled)
-                root.state = "Pressed";
-        }
-
-        onReleased: {
-            if (root.isEnabled)
-                root.state = "";
-        }
-
-        onClicked: {
-            if (root.isEnabled)
-                root.clicked();
-        }
-
-        onCanceled: {
-            if (root.isEnabled)
-                root.state = "";
-        }
-
-        onPressAndHold: {
-            if (root.isEnabled)
-                hold();
-        }
+    onCanceled: {
+        isHovered = false;
     }
 }

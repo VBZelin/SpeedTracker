@@ -16,7 +16,7 @@ Item {
     anchors.fill: parent
 
     property int currentSpeed: 78
-    property bool isStarted: false
+    property bool timerStarted: false
 
     Rectangle {
         anchors.fill: parent
@@ -39,56 +39,61 @@ Item {
         }
 
         Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: width * 0.8
+            Layout.preferredWidth: Math.min(parent.width, app.maximumScreenWidth) - 48 * scaleFactor
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignHCenter
 
             Speedometer{
-                anchors.fill: parent
-            }
-        }
+                id: speedometer
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 100 * scaleFactor
-
-            Label {
                 width: parent.width
-                height: parent.height
-
-                text: currentSpeed
-                font.pixelSize: 88 * scaleFactor
-                font.bold: true
-                color: colors.theme
-
-                wrapMode: Text.Wrap
-
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
+                height: width
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
             }
-        }
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 20 * scaleFactor
-
-            Label {
+            ColumnLayout {
                 width: parent.width
-                height: parent.height
+                anchors.bottom: speedometer.bottom
+                anchors.bottomMargin: -height / 3
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 0
 
-                text: strings.speed_units
-                font.pixelSize: 16 * scaleFactor
-                color: colors.white_90
+                Label {
+                    Layout.alignment: Qt.AlignHCenter
 
-                wrapMode: Text.Wrap
+                    text: currentSpeed
+                    font.family: fonts.demi_fontFamily
+                    font.pixelSize: 88 * scaleFactor
+                    font.bold: true
+                    font.letterSpacing: -0.3 * scaleFactor
+                    color: colors.theme
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                    wrapMode: Text.Wrap
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    antialiasing: true
+                }
+
+                Label {
+                    Layout.alignment: Qt.AlignHCenter
+
+                    text: strings.speed_units
+                    font.family: fonts.regular_fontFamily
+                    font.pixelSize: 16 * scaleFactor
+                    font.letterSpacing: -0.3 * scaleFactor
+                    color: colors.white_90
+
+                    wrapMode: Text.Wrap
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    antialiasing: true
+                }
             }
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
         }
 
         Item {
@@ -96,40 +101,44 @@ Item {
             Layout.preferredHeight: 94 * scaleFactor
 
             GridLayout {
-                id: grid
+                id: gridLayout
 
                 width: 296 * scaleFactor
                 height: parent.height
                 anchors.horizontalCenter: parent.horizontalCenter
-                columns: 3
 
+                columns: 3
                 columnSpacing: 0
 
+                property real cellwidth: width / count
+
+                property int count: 3
+
                 BlockDelegate {
-                    Layout.preferredWidth: parent.width / 3
+                    Layout.preferredWidth: gridLayout.cellwidth
                     Layout.fillHeight: true
 
-                    blockTitle: strings.duration
-                    numberContent: "1:39"
-                    blockUnits: strings.duration_units
+                    title: strings.duration
+                    value: "1:39"
+                    unit: strings.duration_units
                 }
 
                 BlockDelegate {
-                    Layout.preferredWidth: parent.width / 3
+                    Layout.preferredWidth: gridLayout.cellwidth
                     Layout.fillHeight: true
 
-                    blockTitle: strings.average_speed
-                    numberContent: "90"
-                    blockUnits: strings.speed_units
+                    title: strings.average_speed
+                    value: "90"
+                    unit: strings.speed_units
                 }
 
                 BlockDelegate {
-                    Layout.preferredWidth: parent.width / 3
+                    Layout.preferredWidth: gridLayout.cellwidth
                     Layout.fillHeight: true
 
-                    blockTitle: strings.distance
-                    numberContent: "114"
-                    blockUnits: strings.distance_units
+                    title: strings.distance
+                    value: "114"
+                    unit: strings.distance_units
                 }
             }
         }
@@ -141,116 +150,124 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 60 * scaleFactor
+            Layout.preferredHeight: 56 * scaleFactor
 
             RowLayout {
-                width: 296 * scaleFactor
                 height: parent.height
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 0
 
                 Rectangle {
-                    Layout.preferredWidth:  60 * scaleFactor
+                    Layout.preferredWidth: 56 * scaleFactor
                     Layout.fillHeight: true
 
                     color: colors.white_15
-                    radius: 60 * scaleFactor
-
+                    radius: width / 2
 
                     Image {
-                        id:mapView
+                        id: image
 
                         width: 36 * scaleFactor
                         height: width
+                        anchors.centerIn: parent
+
                         source: images.map_thumbnail
                         mipmap: true
-                        anchors.centerIn: parent
+
+                        onStatusChanged: {
+                            if (status === Image.Error)
+                                source = "";
+                        }
                     }
 
                     ColorOverlay {
-                        anchors.fill: mapView
-                        source: mapView
+                        anchors.fill: image
+
+                        source: image
                         color: colors.white
-                    }
-                }
-
-                Item {
-                    Layout.preferredWidth:  46 * scaleFactor
-                    Layout.fillHeight: true
-                }
-
-                Rectangle {
-                    visible: isStarted
-                    Layout.preferredWidth: 188 * scaleFactor
-                    Layout.fillHeight: true
-
-                    border.width: 3 * scaleFactor
-                    color: colors.transparent
-                    border.color: colors.theme
-                    radius: 30 * scaleFactor
-
-                    Label {
-                        id: stopLabel
-
-                        width: parent.width
-                        height: parent.height
-                        clip: true
-
-                        text: strings.stop
-                        color: colors.theme
-                        font.pixelSize: 24 * scaleFactor
-                        font.bold:true
-                        elide: Text.ElideLeft
-
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
                     }
 
                     TouchGestureArea {
                         anchors.fill: parent
 
-                        radius: 20 * scaleFactor
-                        color: colors.transparent
+                        radius: parent.radius
 
                         onClicked:{
-                            isStarted = !isStarted;
+
                         }
                     }
                 }
 
+                Item {
+                    Layout.preferredWidth: 48 * scaleFactor
+                    Layout.fillHeight: true
+                }
+
                 Rectangle {
-                    visible: !isStarted
                     Layout.preferredWidth: 188 * scaleFactor
                     Layout.fillHeight: true
 
-                    color: colors.theme
+                    color: {
+                        if (timerStarted)
+                            return colors.transparent;
+
+                        return colors.theme;
+                    }
+
                     radius: 30 * scaleFactor
 
-                    Label {
-                        id: startLabel
+                    border.width: {
+                        if (timerStarted)
+                            return 3 * scaleFactor;
 
+                        return 0;
+                    }
+
+                    border.color: {
+                        if (timerStarted)
+                            return colors.theme;
+
+                        return colors.transparent;
+                    }
+
+                    Label {
                         width: parent.width
                         height: parent.height
                         clip: true
 
-                        text: strings.start
-                        color:  colors.white
+                        text: {
+                            if (timerStarted)
+                                return strings.stop;
+
+                            return strings.start;
+                        }
+
+                        color: {
+                            if (timerStarted)
+                                return colors.theme;
+
+                            return colors.white;
+                        }
+
+                        font.family: fonts.demi_fontFamily
                         font.pixelSize: 24 * scaleFactor
-                        font.bold:true
-                        elide: Text.ElideLeft
+                        font.letterSpacing: -0.3 * scaleFactor
+                        font.bold: true
 
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideLeft
+
+                        antialiasing: true
                     }
 
                     TouchGestureArea {
                         anchors.fill: parent
 
-                        radius: 20 * scaleFactor
-                        color: colors.transparent
+                        radius: parent.radius
 
                         onClicked:{
-                            isStarted = !isStarted;
+                            timerStarted = !timerStarted;
                         }
                     }
                 }
@@ -259,7 +276,7 @@ Item {
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40 * scaleFactor
+            Layout.preferredHeight: 48 * scaleFactor + app.bottomNotchHeight
         }
     }
 }
