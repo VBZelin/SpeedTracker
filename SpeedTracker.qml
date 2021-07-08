@@ -26,6 +26,8 @@ import QtQuick.Controls 2.15
 
 import ArcGIS.AppFramework 1.0
 import ArcGIS.AppFramework.Notifications 1.0
+import ArcGIS.AppFramework.Platform 1.0
+import Esri.ArcGISRuntime 100.11
 
 import "Assets"
 import "Views"
@@ -108,12 +110,21 @@ App {
         id: strings
     }
 
+    PermissionDialog {
+        id:permissionDialog
+        openSettingsWhenDenied: true
+
+        onRejected:{}
+        onAccepted:{}
+    }
+
     Component.onCompleted: {
         init();
     }
 
     function init() {
         checkDevice();
+        grantLocationPermission();
     }
 
     function checkDevice() {
@@ -167,6 +178,15 @@ App {
 
         default:
             break;
+        }
+    }
+
+    function grantLocationPermission() {
+        if(isiOS || isAndroid) {
+            if (Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse) !== Permission.PermissionResultGranted){
+                permissionDialog.permission = PermissionDialog.PermissionDialogTypeLocationWhenInUse;
+                permissionDialog.open();
+            }
         }
     }
 }

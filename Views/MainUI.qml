@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.12
 import QtGraphicalEffects 1.12
 
 import ArcGIS.AppFramework 1.0
+import ArcGIS.AppFramework.Platform 1.0
 
 import Esri.ArcGISRuntime 100.11
 
@@ -28,6 +29,8 @@ Item {
     property int avgSpeed: 0
 
     property real distance: 0
+
+    property bool showMapPopup: false
 
     onTimerStartedChanged: {
         if (timerStarted) {
@@ -222,7 +225,8 @@ Item {
                         radius: parent.radius
 
                         onClicked:{
-
+                            if(checkLocationPermission())
+                                showMapPopup = true;
                         }
                     }
                 }
@@ -294,7 +298,8 @@ Item {
                         radius: parent.radius
 
                         onClicked:{
-                            timerStarted = !timerStarted;
+                            if(checkLocationPermission())
+                                timerStarted = !timerStarted;
                         }
                     }
                 }
@@ -304,6 +309,17 @@ Item {
         Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 48 * scaleFactor + app.bottomNotchHeight
+        }
+    }
+
+    MapPopup {
+        id: mapPopup
+
+        anchors.fill: parent
+        visible: showMapPopup
+
+        onBackBtnClicked: {
+            showMapPopup = false;
         }
     }
 
@@ -363,5 +379,14 @@ Item {
 
     function format(num) {
         return (num < 10 ? "0" + num : num);
+    }
+
+    function checkLocationPermission(){
+        if(isiOS || isAndroid) {
+            if (Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse) !== Permission.PermissionResultGranted){
+                console.log(Permission.checkPermission(Permission.PermissionTypeLocationWhenInUse))
+                return false;
+            } else return true;
+        } else return true;
     }
 }
