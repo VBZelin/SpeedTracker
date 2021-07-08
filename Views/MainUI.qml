@@ -231,9 +231,7 @@ Item {
                     }
 
                     Label {
-                        width: parent.width
-                        height: parent.height
-                        clip: true
+                        anchors.fill: parent
 
                         text: {
                             if (timerStarted)
