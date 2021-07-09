@@ -152,7 +152,7 @@ Item {
                             return strings.days;
 
                         if (hours > 0)
-                            return strings.hours
+                            return strings.hours;
 
                         return strings.minutes;
                     }
