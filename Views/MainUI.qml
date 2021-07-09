@@ -167,7 +167,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.distance
-                    value: distance
+                    value: distance.toFixed(2)
                     unit: strings.distance_units
                 }
             }
