@@ -21,6 +21,11 @@ Item {
     property var geometry: ({})
     property var metadata: ({})
 
+    property var xMin
+    property var yMin
+    property var xMax
+    property var yMax
+
     readonly property int kWGS84: 4326
 
     AppDb {
@@ -61,7 +66,7 @@ Item {
     }
 
     function startCapture(location, callback) {
-        clearPreviousData();
+        resetData();
 
         isCapturing = true;
 
@@ -75,6 +80,8 @@ Item {
         let y = position.y;
         let x = position.x;
         let z = position.z;
+
+        updateDisplayArea(x, y, z);
 
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
@@ -136,6 +143,8 @@ Item {
         let x = position.x;
         let z = position.z;
 
+        updateDisplayArea(x, y, z);
+
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
                                                                  y: y,
@@ -196,6 +205,8 @@ Item {
         let x = position.x;
         let z = position.z;
 
+        updateDisplayArea(x, y, z);
+
         let pointObj = ArcGISRuntimeEnvironment.createObject("Point", {
                                                                  x: x,
                                                                  y: y,
@@ -217,7 +228,7 @@ Item {
         let count = pointsArr.count;
 
         if (count < 2) {
-            clearPreviousData();
+            resetData();
 
             db.exec(queries.tracks._delete, {
                         trackId: trackId
@@ -256,13 +267,55 @@ Item {
                  });
     }
 
+    function updateDisplayArea(x, y, z) {
+        if (xMin) {
+            if (xMin > x)
+                xMin = x;
+        } else {
+            xMin = x;
+        }
+
+        if (yMin) {
+            if (yMin > y)
+                yMin = y;
+        } else {
+            yMin = y;
+        }
+
+        if (xMax) {
+            if (xMax < x)
+                xMax = x;
+        } else {
+            xMax = x;
+        }
+
+        if (yMax) {
+            if (yMax < y)
+                yMax = y;
+        } else {
+            yMax = y;
+        }
+    }
+
+    function createEnvelope() {
+        let envelope = ArcGISRuntimeEnvironment.createObject("Envelope", {
+                                                                 xMin: xMin,
+                                                                 yMin: yMin,
+                                                                 xMax: xMax,
+                                                                 yMax: yMax,
+                                                                 spatialReference: Factory.SpatialReference.createWgs84()
+                                                             });
+
+        return envelope;
+    }
+
     function getTimestamp() {
         let date = new Date();
 
         return date.getTime();
     }
 
-    function clearPreviousData() {
+    function resetData() {
         trackId = "";
         lastPointObj = null;
         distance = 0;

@@ -28,6 +28,11 @@ Item {
     property var polylineBuilder
     property var polylineGraphic
 
+    // 0 off, 1 is recenter, 2 is navigation
+    property int autoPanMode: 1
+
+    property bool isAutoPanLocked: false
+
     signal newLocation(var location)
     signal back()
 
@@ -47,6 +52,22 @@ Item {
                 id: devicePositionSource
             }
         }
+
+        onMousePressed: {
+            isMousePressed = true;
+        }
+
+        onMouseReleased: {
+            if (isMousePressed) {
+                isAutoPanLocked = true;
+
+                autoPanTimer.restart();
+
+                isMousePressed = false;
+            }
+        }
+
+        property bool isMousePressed: false
 
         Component.onCompleted: {
             zoomToLocation();
@@ -126,8 +147,6 @@ Item {
             radius: parent.radius
 
             onClicked:{
-                mapView.locationDisplay.stop();
-
                 back();
             }
         }
@@ -140,6 +159,17 @@ Item {
 
         onTriggered: {
             getLocation();
+        }
+    }
+
+    Timer {
+        id: autoPanTimer
+
+        interval: 6000
+
+        onTriggered: {
+            if (autoPanMode !== 0 && isAutoPanLocked && !app.dataManager.isCapturing)
+                resumePreviousAutoPanMode();
         }
     }
 
@@ -170,18 +200,30 @@ Item {
         polylineGraphic = createGraphic(polylineBuilder.geometry, polylineSymbol);
 
         polylineGraphicsOverlay.graphics.append(polylineGraphic);
+
+        let envelope = app.dataManager.createEnvelope();
+
+        mapView.setViewpointGeometryAndPadding(envelope, 48 * scaleFactor);
     }
 
     function trackPolyRendering(data) {
         polylineBuilder.addPoint(data.pointObj);
 
         polylineGraphic.geometry = polylineBuilder.geometry;
+
+        let envelope = app.dataManager.createEnvelope();
+
+        mapView.setViewpointGeometryAndPadding(envelope, 48 * scaleFactor);
     }
 
     function endPolyRendering(data) {
         polylineBuilder.addPoint(data.pointObj);
 
         polylineGraphic.geometry = polylineBuilder.geometry;
+
+        let envelope = app.dataManager.createEnvelope();
+
+        mapView.setViewpointGeometryAndPadding(envelope, 48 * scaleFactor);
     }
 
     function createGraphic(geometry, symbol) {
@@ -201,6 +243,23 @@ Item {
         mapView.locationDisplay.start();
     }
 
+    function resumePreviousAutoPanMode() {
+        turnOffDefaultZooming();
+
+        changeAutoPanMode(autoPanMode);
+    }
+
+    function turnOffDefaultZooming() {
+        if (mapView.locationDisplay.initialZoomScale !== 0)
+            mapView.locationDisplay.initialZoomScale = 0;
+    }
+
+    function changeAutoPanMode(autoPanMode) {
+        mapView.locationDisplay.autoPanMode = autoPanMode;
+        mapView.locationDisplay.start();
+
+        isAutoPanLocked = false;
+    }
 
     function getLocation() {
         lastLocation = mapView.locationDisplay.location;
