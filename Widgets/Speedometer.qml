@@ -10,6 +10,12 @@ CircularGauge {
     maximumValue: 60
     stepSize: 1
 
+    Behavior on value {
+        NumberAnimation {
+            duration: 200
+        }
+    }
+
     style: CircularGaugeStyle {
         id: style
 
