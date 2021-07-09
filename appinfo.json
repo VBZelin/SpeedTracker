@@ -1,4 +1,5 @@
 {
+    "appLink": "",
     "arcgisRuntime": 0,
     "capabilities": {
         "audio": false,
@@ -37,17 +38,24 @@
     },
     "deployment": {
         "android": {
+            "packageName": ""
         },
         "arcgisRuntimeExtensionsLicense": "",
         "arcgisRuntimeLicense": "",
+        "clientId": "",
         "ios": {
+            "bundleId": "",
             "codeSignIdentity": ""
         },
         "macos": {
+            "bundleId": "",
             "codeSignIdentity": ""
         },
+        "publisherName": "",
         "shortcutName": "",
         "uwp": {
+            "packageName": "",
+            "productID": ""
         },
         "winphone": {
             "packageDisplayName": ""
@@ -89,13 +97,14 @@
     "properties": {
     },
     "resources": {
-        "appIcon": "appicon.png",
+        "appIcon": "MicrosoftTeams-image (10).png",
         "launchImageBackground": "launchimage-background.png",
         "launchImageBackgroundColor": "#ffffff",
         "launchImageOverlay": "launchimage-overlay.png"
     },
     "type": "app",
     "universalLink": "",
+    "urlScheme": "",
     "version": {
         "major": 1,
         "micro": 1
