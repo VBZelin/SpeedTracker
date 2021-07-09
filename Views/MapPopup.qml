@@ -10,6 +10,7 @@ import ArcGIS.AppFramework 1.0
 import Esri.ArcGISRuntime 100.11
 
 import "../Widgets"
+
 Item {
     id: mapPopup
 
