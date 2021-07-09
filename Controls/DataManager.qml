@@ -156,12 +156,14 @@ Item {
 
         geometry.paths = [pointsArr];
 
-        let elapsedSeconds = (metadata.startTime - timestamp) / 1000;
+        let elapsedSeconds = (timestamp - metadata.startTime) / 1000;
 
         metadata.avgSpeed = distance / elapsedSeconds * 3600;
         metadata.endTime = timestamp;
         metadata.distance = distance;
         metadata.curSpeed = curSpeed;
+
+        console.log(distance, elapsedSeconds)
 
         db.exec(queries.tracks.update, {
                     trackId: trackId,

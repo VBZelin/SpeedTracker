@@ -167,7 +167,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.distance
-                    value: distance.toFixed(2)
+                    value: distance
                     unit: strings.distance_units
                 }
             }
@@ -296,9 +296,13 @@ Item {
                         radius: parent.radius
 
                         onClicked:{
-                            if(checkLocationPermission()){
-                                timerStarted = !timerStarted;
-                            }
+                            if (!checkLocationPermission())
+                                return;
+
+                            if (!mapPopup.lastLocation)
+                                return;
+
+                            timerStarted = !timerStarted;
                         }
                     }
                 }
@@ -327,9 +331,9 @@ Item {
             app.dataManager.trackCapture(location, (data) => {
                                              let metadata = data.metadata;
 
-                                             distance = metadata.distance;
-                                             avgSpeed = metadata.avgSpeed;
-                                             curSpeed = metadata.curSpeed;
+                                             distance = metadata.distance.toFixed(1);
+                                             avgSpeed = metadata.avgSpeed.toFixed(1);
+                                             curSpeed = metadata.curSpeed.toFixed(1);
 
                                              trackPolyRendering(data);
                                          });
@@ -358,9 +362,9 @@ Item {
         app.dataManager.startCapture(mapPopup.lastLocation, (data) => {
                                          let metadata = data.metadata;
 
-                                         distance = metadata.distance;
-                                         avgSpeed = metadata.avgSpeed;
-                                         curSpeed = metadata.curSpeed;
+                                         distance = metadata.distance.toFixed(1);
+                                         avgSpeed = metadata.avgSpeed.toFixed(1);
+                                         curSpeed = metadata.curSpeed.toFixed(1);
 
                                          mapPopup.startPolyRendering(data);
                                      });
@@ -372,9 +376,9 @@ Item {
         app.dataManager.endCapture(mapPopup.lastLocation, (data) => {
                                        let metadata = data.metadata;
 
-                                       distance = metadata.distance;
-                                       avgSpeed = metadata.avgSpeed;
-                                       curSpeed = metadata.curSpeed;
+                                       distance = metadata.distance.toFixed(1);
+                                       avgSpeed = metadata.avgSpeed.toFixed(1);
+                                       curSpeed = metadata.curSpeed.toFixed(1);
 
                                        mapPopup.endPolyRendering(data);
                                    });

@@ -7,14 +7,14 @@ CircularGauge {
     id: speedometer
 
     minimumValue: 0
-    maximumValue: 200
-    stepSize: 10
+    maximumValue: 60
+    stepSize: 1
 
     style: CircularGaugeStyle {
         id: style
 
-        labelStepSize: 20
-        minorTickmarkCount: 2
+        labelStepSize: 10
+        minorTickmarkCount: 10
         minimumValueAngle: -120
         maximumValueAngle: 120
 
@@ -22,14 +22,14 @@ CircularGauge {
             visible: styleData.value % 10 == 0
 
             implicitWidth: {
-                if (styleData.value % 20 == 0)
+                if (styleData.value % 10 == 0)
                     return outerRadius * 0.02;
 
                 return outerRadius * 0.01;
             }
 
             implicitHeight: {
-                if (styleData.value % 20 == 0)
+                if (styleData.value % 10 == 0)
                     return outerRadius * 0.08;
 
                 return outerRadius * 0.03;

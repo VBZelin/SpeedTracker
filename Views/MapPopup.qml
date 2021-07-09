@@ -193,7 +193,7 @@ Item {
         return graphic;
     }
 
-    function zoomToLocation(){
+    function zoomToLocation() {
         if (mapView.locationDisplay.started)
             return;
 
@@ -202,7 +202,7 @@ Item {
     }
 
 
-    function getLocation(){
+    function getLocation() {
         lastLocation = mapView.locationDisplay.location;
 
         newLocation(lastLocation);
