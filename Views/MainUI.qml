@@ -160,7 +160,7 @@ Item {
                     Layout.fillHeight: true
 
                     title: strings.average_speed
-                    value: avgSpeed < 0 ? 0 : avgSpeed
+                    value: avgSpeed
                     unit: strings.speed_units
                 }
 
