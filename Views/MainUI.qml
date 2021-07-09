@@ -151,7 +151,10 @@ Item {
                         if (days > 0)
                             return strings.days;
 
-                        return strings.hours;
+                        if (hours > 0)
+                            return strings.hours
+
+                        return strings.minutes;
                     }
                 }
 
