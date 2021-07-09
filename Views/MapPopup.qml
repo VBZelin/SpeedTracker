@@ -21,10 +21,12 @@ Item {
 
     property var lastLocation
 
+    property var pointGraphicsOverlay
     property var tempPolylineGraphicsOverlay
     property var polylineGraphicsOverlay
 
     property var polylineBuilder
+    property var polylineGraphic
 
     signal newLocation(var location)
     signal back()
@@ -71,6 +73,16 @@ Item {
         style: Enums.SimpleLineSymbolStyleDash
         color: colors.theme
         antiAlias: true
+    }
+
+    PictureMarkerSymbol {
+        id: pointSymbol
+
+        width: 16 * scaleFactor
+        height: 16 * scaleFactor
+        offsetY: height / 2
+
+        url: images.map_point
     }
 
     Rectangle {
@@ -138,42 +150,38 @@ Item {
     function syncAllGraphics() {
         resetAllGraphicsOverlays();
 
+        mapView.graphicsOverlays.append(pointGraphicsOverlay);
         mapView.graphicsOverlays.append(polylineGraphicsOverlay);
-        mapView.graphicsOverlays.append(tempPolylineGraphicsOverlay);
     }
 
-    function startPolyRendering(obj) {
+    function startPolyRendering(data) {
         resetAllGraphicsOverlays();
 
-        let geometry = obj.geometry;
+        let pointGraphic = createGraphic(data.pointObj, pointSymbol);
+
+        pointGraphicsOverlay.graphics.append(pointGraphic);
 
         polylineBuilder = ArcGISRuntimeEnvironment.createObject("PolylineBuilder", {
                                                                     geometry: ArcGISRuntimeEnvironment.createObject("Polyline", {
-                                                                                                                        json: geometry
+                                                                                                                        json: data.geometry
                                                                                                                     })
                                                                 });
 
-        let graphic = createGraphic(polylineBuilder.geometry, tempPolylineSymbol);
+        polylineGraphic = createGraphic(polylineBuilder.geometry, polylineSymbol);
 
-        tempPolylineGraphicsOverlay.graphics.append(graphic);
+        polylineGraphicsOverlay.graphics.append(polylineGraphic);
     }
 
-    function trackPolyRendering(obj) {
-        let pointObj = obj.pointObj;
+    function trackPolyRendering(data) {
+        polylineBuilder.addPoint(data.pointObj);
 
-        polylineBuilder.addPoint(pointObj);
-
-        let graphic = tempPolylineGraphicsOverlay.graphics.get(0);
-
-        graphic.geometry = polylineBuilder.geometry;
+        polylineGraphic.geometry = polylineBuilder.geometry;
     }
 
-    function endPolyRendering(pointObj) {
-        tempPolylineGraphicsOverlay.graphics.remove(0);
+    function endPolyRendering(data) {
+        polylineBuilder.addPoint(data.pointObj);
 
-        let graphic = createGraphic(polylineBuilder.geometry, polylineSymbol);
-
-        polylineGraphicsOverlay.graphics.append(graphic);
+        polylineGraphic.geometry = polylineBuilder.geometry;
     }
 
     function createGraphic(geometry, symbol) {
@@ -201,6 +209,13 @@ Item {
     }
 
     function resetAllGraphicsOverlays() {
+        if (pointGraphicsOverlay)
+            pointGraphicsOverlay.graphics.clear();
+        else
+            pointGraphicsOverlay = ArcGISRuntimeEnvironment.createObject("GraphicsOverlay", {
+                                                                             renderingMode: Enums.GraphicsRenderingModeStatic
+                                                                         });
+
         if (tempPolylineGraphicsOverlay)
             tempPolylineGraphicsOverlay.graphics.clear();
         else
@@ -215,7 +230,8 @@ Item {
                                                                                 renderingMode: Enums.GraphicsRenderingModeStatic
                                                                             });
 
-        polylineBuilder = {};
+        polylineBuilder = null;
+        polylineGraphic = null;
     }
 
     function open() {

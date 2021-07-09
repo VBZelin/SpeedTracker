@@ -324,14 +324,14 @@ Item {
             if (!app.dataManager.isCapturing)
                 return;
 
-            app.dataManager.trackCapture(location, (obj) => {
-                                             let metadata = obj.metadata;
+            app.dataManager.trackCapture(location, (data) => {
+                                             let metadata = data.metadata;
 
                                              distance = metadata.distance;
                                              avgSpeed = metadata.avgSpeed;
                                              curSpeed = metadata.curSpeed;
 
-                                             trackPolyRendering(obj);
+                                             trackPolyRendering(data);
                                          });
         }
     }
@@ -355,28 +355,28 @@ Item {
 
         displayTimer.start();
 
-        app.dataManager.startCapture(mapPopup.lastLocation, (obj) => {
-                                         let metadata = obj.metadata;
+        app.dataManager.startCapture(mapPopup.lastLocation, (data) => {
+                                         let metadata = data.metadata;
 
                                          distance = metadata.distance;
                                          avgSpeed = metadata.avgSpeed;
                                          curSpeed = metadata.curSpeed;
 
-                                         mapPopup.startPolyRendering(obj);
+                                         mapPopup.startPolyRendering(data);
                                      });
     }
 
     function stopCapture() {
         displayTimer.stop();
 
-        app.dataManager.endCapture(mapPopup.lastLocation, (obj) => {
-                                       let metadata = obj.metadata;
+        app.dataManager.endCapture(mapPopup.lastLocation, (data) => {
+                                       let metadata = data.metadata;
 
                                        distance = metadata.distance;
                                        avgSpeed = metadata.avgSpeed;
                                        curSpeed = metadata.curSpeed;
 
-                                       mapPopup.endPolyRendering(obj);
+                                       mapPopup.endPolyRendering(data);
                                    });
     }
 
