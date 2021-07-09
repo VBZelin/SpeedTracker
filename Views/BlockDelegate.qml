@@ -58,7 +58,7 @@ Item {
                 font.pixelSize: 32 * scaleFactor
                 font.bold: true
                 font.letterSpacing: -0.3 * scaleFactor
-                color: text === "0" ? colors.white_90 : colors.theme
+                color: !app.dataManager.isCapturing ? colors.white_90 : colors.theme
 
                 wrapMode: Text.Wrap
 
