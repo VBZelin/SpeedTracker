@@ -71,7 +71,6 @@ Item {
         isCapturing = true;
 
         let position = location.position;
-        let curSpeed = location.velocity * 2.23694;
 
         trackId = AppFramework.createUuidString(0).toUpperCase();
 
@@ -108,8 +107,7 @@ Item {
             startTime: timestamp,
             endTime: "N/A",
             distance: 0,
-            avgSpeed: 0,
-            curSpeed: curSpeed
+            avgSpeed: 0
         };
 
         db.exec(queries.tracks.insert, {
@@ -135,7 +133,6 @@ Item {
 
     function trackCapture(location, callback) {
         let position = location.position;
-        let curSpeed = location.velocity * 2.23694;
 
         let timestamp = getTimestamp();
 
@@ -170,7 +167,6 @@ Item {
         metadata.avgSpeed = distance / elapsedSeconds * 3600;
         metadata.endTime = timestamp;
         metadata.distance = distance;
-        metadata.curSpeed = curSpeed;
 
         db.exec(queries.tracks.update, {
                     trackId: trackId,
@@ -197,7 +193,6 @@ Item {
         isCapturing = false;
 
         let position = location.position;
-        let curSpeed = location.velocity * 2.23694;
 
         let timestamp = getTimestamp();
 
@@ -239,12 +234,11 @@ Item {
 
         geometry.paths = [pointsArr];
 
-        let elapsedSeconds = (metadata.startTime - timestamp) / 1000;
+        let elapsedSeconds = (timestamp - metadata.startTime) / 1000;
 
         metadata.avgSpeed = distance / elapsedSeconds * 3600;
         metadata.endTime = timestamp;
         metadata.distance = distance;
-        metadata.curSpeed = curSpeed;
 
         db.exec(queries.tracks.update, {
                     trackId: trackId,

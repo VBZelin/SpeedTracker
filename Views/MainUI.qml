@@ -327,6 +327,10 @@ Item {
         }
 
         onNewLocation: {
+            let speed = location.velocity * 2.23694;
+
+            curSpeed = speed.toFixed(1);
+
             if (!app.dataManager.isCapturing)
                 return;
 
@@ -335,7 +339,6 @@ Item {
 
                                              distance = metadata.distance.toFixed(1);
                                              avgSpeed = metadata.avgSpeed.toFixed(1);
-                                             curSpeed = metadata.curSpeed.toFixed(1);
 
                                              trackPolyRendering(data);
                                          });
@@ -366,7 +369,6 @@ Item {
 
                                          distance = metadata.distance.toFixed(1);
                                          avgSpeed = metadata.avgSpeed.toFixed(1);
-                                         curSpeed = metadata.curSpeed.toFixed(1);
 
                                          mapPopup.startPolyRendering(data);
                                      });
@@ -380,7 +382,6 @@ Item {
 
                                        distance = metadata.distance.toFixed(1);
                                        avgSpeed = metadata.avgSpeed.toFixed(1);
-                                       curSpeed = metadata.curSpeed.toFixed(1);
 
                                        mapPopup.endPolyRendering(data);
                                    });
