@@ -74,6 +74,8 @@ Item {
                 height: width
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
+
+                value: curSpeed
             }
 
             ColumnLayout {
