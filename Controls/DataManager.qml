@@ -163,8 +163,6 @@ Item {
         metadata.distance = distance;
         metadata.curSpeed = curSpeed;
 
-        console.log(distance, elapsedSeconds)
-
         db.exec(queries.tracks.update, {
                     trackId: trackId,
                     geometry: JSON.stringify(geometry),
